@@ -287,12 +287,103 @@
 </head>
 <body>
 
+<!-- ========== STUDENT INFO SPLASH ========== -->
+<div id="splash" style="
+  position:fixed; inset:0; z-index:999;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+">
+  <div style="
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:48px 44px;
+    width:100%; max-width:480px;
+    box-shadow:0 24px 80px rgba(0,0,0,.5);
+  ">
+    <!-- Logo + title -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:32px">
+      <div style="
+        width:52px;height:52px;border-radius:12px;flex-shrink:0;
+        background:linear-gradient(135deg,var(--accent),var(--accent2));
+        display:flex;align-items:center;justify-content:center;
+        font-family:var(--mono);font-weight:700;font-size:20px;color:white;
+      ">Py</div>
+      <div>
+        <div style="font-family:var(--mono);font-size:15px;font-weight:700;color:var(--text)">M110: Python Programming</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:3px">Algorithms &amp; Fundamentals Quiz</div>
+      </div>
+    </div>
+
+    <div style="font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.6">
+      Please enter your details before starting. The timer begins once you click <strong style="color:var(--text)">Start Quiz</strong>.
+    </div>
+
+    <!-- Full Name -->
+    <div style="margin-bottom:18px">
+      <label style="display:block;font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px">Full Name</label>
+      <input id="student-name" type="text" placeholder="e.g. Ahmad Al-Rashidi"
+        style="
+          width:100%;padding:13px 16px;
+          background:var(--surface);border:1.5px solid var(--border);
+          border-radius:10px;color:var(--text);font-family:var(--sans);font-size:15px;
+          outline:none;transition:border-color .2s;
+        "
+        onfocus="this.style.borderColor='var(--accent)'"
+        onblur="this.style.borderColor='var(--border)'"
+      />
+      <div id="name-err" style="color:var(--red);font-size:12px;margin-top:5px;display:none">⚠ Please enter your full name.</div>
+    </div>
+
+    <!-- Student ID -->
+    <div style="margin-bottom:32px">
+      <label style="display:block;font-size:12px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px">Student ID</label>
+      <input id="student-id" type="text" placeholder="e.g. 12345678"
+        style="
+          width:100%;padding:13px 16px;
+          background:var(--surface);border:1.5px solid var(--border);
+          border-radius:10px;color:var(--text);font-family:var(--mono);font-size:15px;
+          outline:none;transition:border-color .2s;
+        "
+        onfocus="this.style.borderColor='var(--accent)'"
+        onblur="this.style.borderColor='var(--border)'"
+        onkeydown="if(event.key==='Enter') startQuiz()"
+      />
+      <div id="id-err" style="color:var(--red);font-size:12px;margin-top:5px;display:none">⚠ Please enter your student ID.</div>
+    </div>
+
+    <!-- Start button -->
+    <button onclick="startQuiz()" style="
+      width:100%;padding:15px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:white;border:none;border-radius:12px;
+      font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.05em;
+      cursor:pointer;transition:opacity .2s,transform .2s;
+    "
+    onmouseover="this.style.opacity='.88'"
+    onmouseout="this.style.opacity='1'"
+    >Start Quiz →</button>
+
+    <!-- Info row -->
+    <div style="display:flex;gap:20px;margin-top:22px;justify-content:center">
+      <span style="font-size:12px;color:var(--muted)">⏱ 30 minutes</span>
+      <span style="font-size:12px;color:var(--muted)">📝 11 questions</span>
+      <span style="font-size:12px;color:var(--muted)">✏️ 2 open questions</span>
+    </div>
+  </div>
+</div>
+
 <header>
   <div class="logo">Py</div>
   <h1>M110: Python Programming
     <span>Algorithms &amp; Fundamentals Quiz</span>
   </h1>
   <div class="header-right">
+    <div style="text-align:right">
+      <div id="student-display" style="font-size:13px;color:var(--text);font-weight:500"></div>
+      <div id="studentid-display" style="font-size:11px;color:var(--muted);margin-top:2px;font-family:var(--mono)"></div>
+    </div>
     <div>
       <div class="progress-wrap">
         <span id="prog-text">0 / 11 answered</span>
@@ -420,29 +511,29 @@
     <span class="badge badge-tf">Part B</span>
     <span style="font-size:15px;font-weight:600">True or False</span>
     <hr>
-    <span style="font-size:13px;color:var(--muted);white-space:nowrap">4 pts</span>
+    <span style="font-size:13px;color:var(--muted);white-space:nowrap">2 pts</span>
   </div>
 
-  <!-- Q11 -->
-  <div class="q-card" id="q11-card">
-    <div class="q-num">Question 11 of 14 · True / False</div>
+  <!-- Q9 (True/False) -->
+  <div class="q-card" id="q9-card">
+    <div class="q-num">Question 9 of 11 · True / False</div>
     <div class="q-text">An algorithm can only be implemented in one specific programming language.</div>
     <div class="tf-row">
-      <button class="tf-btn" onclick="pickTF(11,'T')">✓ True</button>
-      <button class="tf-btn" onclick="pickTF(11,'F')">✗ False</button>
+      <button class="tf-btn" onclick="pickTF(9,'T')">✓ True</button>
+      <button class="tf-btn" onclick="pickTF(9,'F')">✗ False</button>
     </div>
-    <div class="feedback" id="q11-fb"></div>
+    <div class="feedback" id="q9-fb"></div>
   </div>
 
-  <!-- Q12 -->
-  <div class="q-card" id="q12-card">
-    <div class="q-num">Question 12 of 14 · True / False</div>
+  <!-- Q10 (True/False) -->
+  <div class="q-card" id="q10-card">
+    <div class="q-num">Question 10 of 11 · True / False</div>
     <div class="q-text">In Python, <code style="font-family:var(--mono);background:var(--border);padding:2px 6px;border-radius:4px">print("hello")</code> and <code style="font-family:var(--mono);background:var(--border);padding:2px 6px;border-radius:4px">Print("hello")</code> produce the same result.</div>
     <div class="tf-row">
-      <button class="tf-btn" onclick="pickTF(12,'T')">✓ True</button>
-      <button class="tf-btn" onclick="pickTF(12,'F')">✗ False</button>
+      <button class="tf-btn" onclick="pickTF(10,'T')">✓ True</button>
+      <button class="tf-btn" onclick="pickTF(10,'F')">✗ False</button>
     </div>
-    <div class="feedback" id="q12-fb"></div>
+    <div class="feedback" id="q10-fb"></div>
   </div>
 
   <!-- Q13 removed -->
@@ -455,8 +546,8 @@
     <span style="font-size:13px;color:var(--muted);white-space:nowrap">4 pts</span>
   </div>
 
-  <div class="q-card" id="q14-card">
-    <div class="q-num">Question 14 of 14 · Matching</div>
+  <div class="q-card" id="q11-card">
+    <div class="q-num">Question 11 of 11 · Matching</div>
     <div class="q-text">Match each term on the left with its correct description on the right. Click a term, then click its matching definition.</div>
     <div style="margin-top:16px">
       <div class="match-grid">
@@ -528,16 +619,17 @@
   <!-- RESULTS -->
   <div id="results">
     <div class="result-hero">
+      <div id="result-student-info" style="font-size:14px;color:var(--muted);margin-bottom:20px"></div>
       <div class="result-score" id="res-score">0%</div>
       <div class="result-label">Auto-graded score (open questions graded separately)</div>
       <div class="result-grade" id="res-grade"></div>
       <div class="result-breakdown">
         <div class="breakdown-item">
-          <div class="breakdown-num" id="res-mcq">0/10</div>
+          <div class="breakdown-num" id="res-mcq">0/8</div>
           <div class="breakdown-lbl">MCQ Correct</div>
         </div>
         <div class="breakdown-item">
-          <div class="breakdown-num" id="res-tf">0/3</div>
+          <div class="breakdown-num" id="res-tf">0/2</div>
           <div class="breakdown-lbl">True/False Correct</div>
         </div>
         <div class="breakdown-item">
@@ -552,20 +644,58 @@
 </div><!-- /container -->
 
 <script>
+// ===== STUDENT INFO =====
+function startQuiz() {
+  const name = document.getElementById('student-name').value.trim();
+  const id   = document.getElementById('student-id').value.trim();
+  let valid = true;
+
+  if (!name) {
+    document.getElementById('name-err').style.display = 'block';
+    document.getElementById('student-name').style.borderColor = 'var(--red)';
+    valid = false;
+  } else {
+    document.getElementById('name-err').style.display = 'none';
+    document.getElementById('student-name').style.borderColor = 'var(--border)';
+  }
+  if (!id) {
+    document.getElementById('id-err').style.display = 'block';
+    document.getElementById('student-id').style.borderColor = 'var(--red)';
+    valid = false;
+  } else {
+    document.getElementById('id-err').style.display = 'none';
+    document.getElementById('student-id').style.borderColor = 'var(--border)';
+  }
+  if (!valid) return;
+
+  // Show student info in header
+  document.getElementById('student-display').textContent = '👤 ' + name;
+  document.getElementById('studentid-display').textContent = 'ID: ' + id;
+
+  // Store for results
+  window.studentName = name;
+  window.studentId   = id;
+
+  // Hide splash and start timer
+  document.getElementById('splash').style.display = 'none';
+  startTimer();
+}
+
 // ===== STATE =====
-const MCQ_ANSWERS = { 1:'B', 2:'B', 3:'C', 4:'B', 5:'C', 6:'C', 7:'B', 8:'B', 9:'C', 10:'C' };
-const TF_ANSWERS  = { 11:'F', 12:'F', 13:'T' };
+// MCQ: Q1-Q8 (old Q4 and Q10 removed, renumbered)
+const MCQ_ANSWERS = { 1:'B', 2:'B', 3:'C', 4:'C', 5:'C', 6:'B', 7:'B', 8:'C' };
+// TF: Q9-Q10 (old Q11, Q12 — Q13 removed)
+const TF_ANSWERS  = { 9:'F', 10:'F' };
 // Matching: term index → correct def key
 const MATCH_CORRECT = { 0:'A', 1:'B', 2:'C', 3:'D' };
 const MATCH_LABELS  = { 0:'Flowchart', 1:'Pseudocode', 2:'Sequence Structure', 3:'Decision Structure' };
 
 let mcqSelected = {};
 let tfSelected  = {};
-let matchState  = { activeTerm: null, matched: {} }; // matched: termIndex → defKey
+let matchState  = { activeTerm: null, matched: {} };
 let submitted   = false;
 
-// progress
-const TOTAL_Q = 14; // 10 MCQ + 3 TF + 1 matching block
+const TOTAL_Q = 11; // 8 MCQ + 2 TF + 1 matching block
 function updateProgress() {
   let count = Object.keys(mcqSelected).length + Object.keys(tfSelected).length;
   if (Object.keys(matchState.matched).length > 0) count++;
@@ -580,9 +710,8 @@ function pickMCQ(qNum, letter) {
   mcqSelected[qNum] = letter;
   const card = document.getElementById(`q${qNum}-card`);
   card.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-  const btns = card.querySelectorAll('.option-btn');
   const letters = ['A','B','C','D'];
-  btns[letters.indexOf(letter)].classList.add('selected');
+  card.querySelectorAll('.option-btn')[letters.indexOf(letter)].classList.add('selected');
   updateProgress();
 }
 
@@ -592,21 +721,16 @@ function pickTF(qNum, val) {
   tfSelected[qNum] = val;
   const card = document.getElementById(`q${qNum}-card`);
   card.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected'));
-  const btns = card.querySelectorAll('.tf-btn');
-  btns[val === 'T' ? 0 : 1].classList.add('selected');
+  card.querySelectorAll('.tf-btn')[val === 'T' ? 0 : 1].classList.add('selected');
   updateProgress();
 }
 
 // ===== MATCHING =====
 function clickTerm(idx) {
   if (submitted) return;
-  if (matchState.matched[idx] !== undefined) return; // already matched
-  // deactivate any previous active term
+  if (matchState.matched[idx] !== undefined) return;
   document.querySelectorAll('.match-term').forEach(el => el.classList.remove('active'));
-  if (matchState.activeTerm === idx) {
-    matchState.activeTerm = null;
-    return;
-  }
+  if (matchState.activeTerm === idx) { matchState.activeTerm = null; return; }
   matchState.activeTerm = idx;
   document.getElementById('mt-' + idx).classList.add('active');
 }
@@ -615,25 +739,14 @@ function clickDef(defKey) {
   if (submitted) return;
   if (matchState.activeTerm === null) return;
   const idx = matchState.activeTerm;
-  // check if def already used
-  const usedDefs = Object.values(matchState.matched);
-  if (usedDefs.includes(defKey)) return;
-
+  if (Object.values(matchState.matched).includes(defKey)) return;
   matchState.matched[idx] = defKey;
   matchState.activeTerm = null;
-
-  // visual feedback
   document.getElementById('mt-' + idx).classList.remove('active');
   document.getElementById('mt-' + idx).classList.add('matched');
   document.getElementById('md-' + defKey).classList.add('matched');
   document.querySelectorAll('.match-term').forEach(el => el.classList.remove('active'));
-
-  // if all matched, show result
-  if (Object.keys(matchState.matched).length === 4) {
-    updateProgress();
-  } else {
-    updateProgress();
-  }
+  updateProgress();
 }
 
 // ===== SUBMIT =====
@@ -641,10 +754,10 @@ function submitQuiz() {
   if (submitted) return;
   submitted = true;
 
-  // --- Grade MCQ ---
+  // --- Grade MCQ (Q1–Q8) ---
   let mcqCorrect = 0;
   const letters = ['A','B','C','D'];
-  for (let q = 1; q <= 10; q++) {
+  for (let q = 1; q <= 8; q++) {
     const card = document.getElementById(`q${q}-card`);
     const btns = card.querySelectorAll('.option-btn');
     const correct = MCQ_ANSWERS[q];
@@ -668,9 +781,9 @@ function submitQuiz() {
     }
   }
 
-  // --- Grade TF ---
+  // --- Grade TF (Q9–Q10) ---
   let tfCorrect = 0;
-  for (let q = 11; q <= 13; q++) {
+  for (let q = 9; q <= 10; q++) {
     const card = document.getElementById(`q${q}-card`);
     const btns = card.querySelectorAll('.tf-btn');
     const correct = TF_ANSWERS[q];
@@ -697,9 +810,8 @@ function submitQuiz() {
 
   // --- Grade Matching ---
   let matchPts = 0;
-  let wrongMatches = [];
   for (let i = 0; i < 4; i++) {
-    const chosen = matchState.matched[i];
+    const chosen  = matchState.matched[i];
     const correct = MATCH_CORRECT[i];
     if (chosen === correct) {
       matchPts++;
@@ -712,10 +824,8 @@ function submitQuiz() {
         defEl.classList.remove('matched');
         defEl.classList.add('wrong-match');
       }
-      wrongMatches.push(MATCH_LABELS[i] + ' → ' + ['A diagram…','English-like phrases…','Steps one after another…','IF/ELSE condition…'][['A','B','C','D'].indexOf(correct)]);
     }
   }
-  // Highlight correct matches that were wrong
   for (let i = 0; i < 4; i++) {
     if (matchState.matched[i] !== MATCH_CORRECT[i]) {
       document.getElementById('md-' + MATCH_CORRECT[i]).classList.add('matched');
@@ -736,11 +846,11 @@ function submitQuiz() {
 
   // --- Results summary ---
   const autoTotal = mcqCorrect + tfCorrect + matchPts;
-  const autoMax   = 17; // 10 + 3 + 4
+  const autoMax   = 14; // 8 MCQ + 2 TF + 4 matching
   const pct = Math.round(autoTotal / autoMax * 100);
   document.getElementById('res-score').textContent = pct + '%';
-  document.getElementById('res-mcq').textContent   = mcqCorrect + '/10';
-  document.getElementById('res-tf').textContent    = tfCorrect + '/3';
+  document.getElementById('res-mcq').textContent   = mcqCorrect + '/8';
+  document.getElementById('res-tf').textContent    = tfCorrect + '/2';
   document.getElementById('res-match').textContent = matchPts + '/4';
 
   let grade = '';
@@ -752,6 +862,13 @@ function submitQuiz() {
 
   document.getElementById('results').style.display = 'block';
   document.querySelector('.submit-wrap').style.display = 'none';
+
+  // Show student info in results
+  const infoEl = document.getElementById('result-student-info');
+  if (infoEl && window.studentName) {
+    infoEl.innerHTML = `👤 <span style="color:var(--text);font-weight:600">${window.studentName}</span> &nbsp;·&nbsp; <span style="font-family:var(--mono);color:var(--muted)">ID: ${window.studentId}</span>`;
+  }
+
   document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   clearInterval(timerInterval);
@@ -759,24 +876,28 @@ function submitQuiz() {
 
 function retryQuiz() { location.reload(); }
 
-// ===== TIMER =====
+// ===== TIMER (starts when student clicks Start Quiz) =====
 let seconds = 30 * 60;
+let timerInterval = null;
 const timerEl = document.getElementById('timer');
-const timerInterval = setInterval(() => {
-  seconds--;
-  if (seconds <= 0) {
-    clearInterval(timerInterval);
-    timerEl.textContent = '00:00';
-    timerEl.style.color = 'var(--red)';
-    if (!submitted) submitQuiz();
-    return;
-  }
-  const m = Math.floor(seconds / 60).toString().padStart(2,'0');
-  const s = (seconds % 60).toString().padStart(2,'0');
-  timerEl.textContent = `${m}:${s}`;
-  if (seconds <= 300) timerEl.style.color = 'var(--red)';
-  else if (seconds <= 600) timerEl.style.color = 'var(--yellow)';
-}, 1000);
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    seconds--;
+    if (seconds <= 0) {
+      clearInterval(timerInterval);
+      timerEl.textContent = '00:00';
+      timerEl.style.color = 'var(--red)';
+      if (!submitted) submitQuiz();
+      return;
+    }
+    const m = Math.floor(seconds / 60).toString().padStart(2,'0');
+    const s = (seconds % 60).toString().padStart(2,'0');
+    timerEl.textContent = `${m}:${s}`;
+    if (seconds <= 300) timerEl.style.color = 'var(--red)';
+    else if (seconds <= 600) timerEl.style.color = 'var(--yellow)';
+  }, 1000);
+}
 </script>
 </body>
 </html>
