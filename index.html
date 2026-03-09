@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M110: Python Programming – Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f1a;
+    --surface: #161926;
+    --card: #1e2236;
+    --border: #2a2f4a;
+    --accent: #4f8ef7;
+    --accent2: #7c5ef5;
+    --green: #3dd68c;
+    --red: #f75f5f;
+    --yellow: #f5c842;
+    --text: #e8eaf6;
+    --muted: #8891b2;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #1a1f3c 0%, #0d1528 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-weight: 700; font-size: 18px;
+    color: white; flex-shrink: 0;
+  }
+  header h1 {
+    font-family: var(--mono); font-size: 16px; font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  header h1 span { color: var(--muted); font-weight: 400; font-size: 13px; display: block; margin-top: 2px;}
+  .header-right {
+    margin-left: auto;
+    display: flex; gap: 20px; align-items: center;
+  }
+  .timer {
+    font-family: var(--mono); font-size: 22px; font-weight: 700;
+    color: var(--accent);
+    background: rgba(79,142,247,.12);
+    border: 1px solid rgba(79,142,247,.25);
+    padding: 8px 18px; border-radius: 8px;
+  }
+  .progress-wrap { font-size: 13px; color: var(--muted); text-align: right; }
+  .progress-bar-outer {
+    width: 120px; height: 6px;
+    background: var(--border); border-radius: 3px; margin-top: 6px;
+  }
+  .progress-bar-inner {
+    height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width .4s ease;
+  }
+
+  /* LAYOUT */
+  .container { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* SECTION LABEL */
+  .section-label {
+    display: flex; align-items: center; gap: 12px;
+    margin: 44px 0 20px;
+  }
+  .section-label .badge {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 4px;
+  }
+  .badge-mcq { background: rgba(79,142,247,.18); color: var(--accent); border: 1px solid rgba(79,142,247,.3); }
+  .badge-tf  { background: rgba(61,214,140,.15); color: var(--green); border: 1px solid rgba(61,214,140,.3); }
+  .badge-match { background: rgba(245,200,66,.15); color: var(--yellow); border: 1px solid rgba(245,200,66,.3); }
+  .badge-open { background: rgba(124,94,245,.18); color: var(--accent2); border: 1px solid rgba(124,94,245,.3); }
+  .section-label hr { flex: 1; border: none; border-top: 1px solid var(--border); }
+
+  /* QUESTION CARD */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px 28px;
+    margin-bottom: 16px;
+    transition: border-color .25s;
+  }
+  .q-card:hover { border-color: rgba(79,142,247,.3); }
+  .q-num {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px;
+  }
+  .q-text {
+    font-size: 16px; font-weight: 500; line-height: 1.6;
+    margin-bottom: 18px; color: var(--text);
+  }
+
+  /* MCQ OPTIONS */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-family: var(--sans); font-size: 15px; color: var(--text);
+    text-align: left; width: 100%;
+    transition: all .2s;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(79,142,247,.08);
+  }
+  .option-btn.selected {
+    border-color: var(--accent);
+    background: rgba(79,142,247,.12);
+  }
+  .option-btn.correct {
+    border-color: var(--green);
+    background: rgba(61,214,140,.12);
+  }
+  .option-btn.wrong {
+    border-color: var(--red);
+    background: rgba(247,95,95,.1);
+  }
+  .opt-letter {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    width: 26px; height: 26px; border-radius: 6px;
+    background: var(--border); color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all .2s;
+  }
+  .option-btn.selected .opt-letter { background: var(--accent); color: white; }
+  .option-btn.correct .opt-letter { background: var(--green); color: white; }
+  .option-btn.wrong .opt-letter { background: var(--red); color: white; }
+
+  /* TRUE/FALSE */
+  .tf-row { display: flex; gap: 12px; }
+  .tf-btn {
+    flex: 1; padding: 14px;
+    border-radius: 10px; font-size: 15px; font-weight: 500;
+    cursor: pointer; text-align: center;
+    border: 1.5px solid var(--border);
+    background: var(--surface); color: var(--text);
+    transition: all .2s;
+  }
+  .tf-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(79,142,247,.08); }
+  .tf-btn.selected { border-color: var(--accent); background: rgba(79,142,247,.12); }
+  .tf-btn.correct { border-color: var(--green); background: rgba(61,214,140,.12); }
+  .tf-btn.wrong { border-color: var(--red); background: rgba(247,95,95,.1); }
+
+  /* MATCHING */
+  .match-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .match-col-label {
+    font-size: 11px; font-family: var(--mono); text-transform: uppercase;
+    letter-spacing: .1em; color: var(--muted); margin-bottom: 8px;
+  }
+  .match-term, .match-def {
+    padding: 12px 14px; border-radius: 10px; font-size: 14px;
+    border: 1.5px solid var(--border); background: var(--surface);
+    cursor: pointer; transition: all .2s; margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .match-term:hover, .match-def:hover { border-color: var(--accent); }
+  .match-term.active { border-color: var(--yellow); background: rgba(245,200,66,.1); }
+  .match-def.matched { border-color: var(--green); background: rgba(61,214,140,.1); cursor: default; }
+  .match-term.matched { border-color: var(--green); background: rgba(61,214,140,.1); cursor: default; }
+  .match-def.wrong-match { border-color: var(--red); background: rgba(247,95,95,.1); }
+  .match-pair-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .match-result {
+    margin-top: 12px; font-size: 14px;
+    padding: 10px 14px; border-radius: 8px;
+    display: none;
+  }
+  .match-result.show { display: block; }
+  .match-result.correct-all { background: rgba(61,214,140,.1); color: var(--green); border: 1px solid rgba(61,214,140,.25); }
+  .match-result.wrong-some { background: rgba(247,95,95,.08); color: var(--red); border: 1px solid rgba(247,95,95,.25); }
+
+  /* OPEN QUESTIONS */
+  .open-area {
+    width: 100%; min-height: 160px;
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 10px; color: var(--text);
+    font-family: var(--mono); font-size: 14px; line-height: 1.7;
+    padding: 14px 16px; resize: vertical;
+    transition: border-color .2s;
+    outline: none;
+  }
+  .open-area:focus { border-color: var(--accent2); }
+  .open-hint {
+    margin-top: 10px; font-size: 13px; color: var(--muted);
+    background: rgba(124,94,245,.08); border: 1px solid rgba(124,94,245,.2);
+    border-radius: 8px; padding: 10px 14px;
+  }
+  .open-hint strong { color: var(--accent2); }
+
+  /* FEEDBACK */
+  .feedback {
+    margin-top: 12px; font-size: 13px; border-radius: 8px;
+    padding: 10px 14px; display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: rgba(61,214,140,.1); color: var(--green); border: 1px solid rgba(61,214,140,.25); }
+  .feedback.wrong   { background: rgba(247,95,95,.08); color: var(--red); border: 1px solid rgba(247,95,95,.25); }
+
+  /* SUBMIT */
+  .submit-wrap { margin-top: 50px; text-align: center; }
+  .submit-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; border: none; cursor: pointer;
+    font-family: var(--mono); font-size: 15px; font-weight: 700;
+    letter-spacing: .05em; padding: 16px 48px; border-radius: 12px;
+    transition: opacity .2s, transform .2s;
+  }
+  .submit-btn:hover { opacity: .9; transform: translateY(-1px); }
+
+  /* RESULTS */
+  #results { display: none; }
+  .result-hero {
+    background: linear-gradient(135deg, #1a1f3c, #0d1528);
+    border: 1px solid var(--border); border-radius: 18px;
+    padding: 48px 40px; text-align: center; margin-bottom: 32px;
+  }
+  .result-score {
+    font-family: var(--mono); font-size: 80px; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+  .result-label { font-size: 18px; color: var(--muted); margin-top: 10px; }
+  .result-grade { font-size: 28px; font-weight: 700; margin-top: 16px; }
+  .result-breakdown {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 32px;
+  }
+  .breakdown-item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; text-align: center;
+  }
+  .breakdown-num { font-family: var(--mono); font-size: 32px; font-weight: 700; color: var(--accent); }
+  .breakdown-lbl { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .retry-btn {
+    margin-top: 32px; padding: 14px 40px; border-radius: 12px;
+    border: 1.5px solid var(--accent); background: transparent;
+    color: var(--accent); font-family: var(--mono); font-size: 14px;
+    cursor: pointer; transition: all .2s;
+  }
+  .retry-btn:hover { background: rgba(79,142,247,.12); }
+
+  @media(max-width:600px){
+    header { padding: 16px 18px; }
+    .container { padding: 24px 14px 60px; }
+    .match-grid { grid-template-columns: 1fr; }
+    .result-breakdown { grid-template-columns: 1fr; }
+    .result-score { font-size: 56px; }
+    .timer { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Py</div>
+  <h1>M110: Python Programming
+    <span>Algorithms &amp; Fundamentals Quiz</span>
+  </h1>
+  <div class="header-right">
+    <div>
+      <div class="progress-wrap">
+        <span id="prog-text">0 / 11 answered</span>
+        <div class="progress-bar-outer"><div class="progress-bar-inner" id="prog-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="timer" id="timer">30:00</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ========== SECTION 1: MCQ ========== -->
+  <div class="section-label">
+    <span class="badge badge-mcq">Part A</span>
+    <span style="font-size:15px;font-weight:600">Multiple Choice Questions</span>
+    <hr>
+    <span style="font-size:13px;color:var(--muted);white-space:nowrap">8 pts</span>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q-card" id="q1-card">
+    <div class="q-num">Question 1 of 11 · MCQ</div>
+    <div class="q-text">What is an <strong>algorithm</strong>?</div>
+    <div class="options">
+      <button class="option-btn" onclick="pickMCQ(1,'A')"><span class="opt-letter">A</span>A programming language used to write Python programs</button>
+      <button class="option-btn" onclick="pickMCQ(1,'B')"><span class="opt-letter">B</span>An ordered set of unambiguous steps that describes a process</button>
+      <button class="option-btn" onclick="pickMCQ(1,'C')"><span class="opt-letter">C</span>A diagram made of boxes connected by arrows</button>
+      <button class="option-btn" onclick="pickMCQ(1,'D')"><span class="opt-letter">D</span>A Python built-in function for sorting data</button>
+    </div>
+    <div class="feedback" id="q1-fb"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-card" id="q2-card">
+    <div class="q-num">Question 2 of 11 · MCQ</div>
+    <div class="q-text">Which of the following is <strong>NOT</strong> a characteristic of a well-defined algorithm?</div>
+    <div class="options">
+      <button class="option-btn" onclick="pickMCQ(2,'A')"><span class="opt-letter">A</span>Finiteness – terminates after a finite number of steps</button>
+      <button class="option-btn" onclick="pickMCQ(2,'B')"><span class="opt-letter">B</span>Ambiguity – each step may lead to multiple meanings</button>
+      <button class="option-btn" onclick="pickMCQ(2,'C')"><span class="opt-letter">C</span>Feasibility – achievable with available resources</button>
+      <button class="option-btn" onclick="pickMCQ(2,'D')"><span class="opt-letter">D</span>Independence – steps are independent of any specific programming language</button>
+    </div>
+    <div class="feedback" id="q2-fb"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q-card" id="q3-card">
+    <div class="q-num">Question 3 of 11 · MCQ</div>
+    <div class="q-text">In a flowchart, which shape is used for a <strong>decision</strong> (condition)?</div>
+    <div class="options">
+      <button class="option-btn" onclick="pickMCQ(3,'A')"><span class="opt-letter">A</span>Rectangle (process box)</button>
+      <button class="option-btn" onclick="pickMCQ(3,'B')"><span class="opt-letter">B</span>Oval / Rounded rectangle (terminal)</button>
+      <button class="option-btn" onclick="pickMCQ(3,'C')"><span class="opt-letter">C</span>Diamond</button>
+      <button class="option-btn" onclick="pickMCQ(3,'D')"><span class="opt-letter">D</span>Parallelogram (input/output)</button>
+    </div>
+    <div class="feedback" id="q3-fb"></div>
+  </div>
+
+  <div class="q-card" id="q4-card">
+    <div class="q-num">Question 4 of 11 · MCQ</div>
+    <div class="q-text">Which Python data type stores <strong>True</strong> or <strong>False</strong> values?</div>
+    <div class="options">
+      <button class="option-btn" onclick="pickMCQ(4,'A')"><span class="opt-letter">A</span>int</button>
+      <button class="option-btn" onclick="pickMCQ(4,'B')"><span class="opt-letter">B</span>float</button>
+      <button class="option-btn" onclick="pickMCQ(4,'C')"><span class="opt-letter">C</span>bool</button>
+      <button class="option-btn" onclick="pickMCQ(4,'D')"><span class="opt-letter">D</span>str</button>
+    </div>
+    <div class="feedback" id="q4-fb"></div>
+  </div>
+
+  <div class="q-card" id="q5-card">
+    <div class="q-num">Question 5 of 11 · MCQ</div>
+    <div class="q-text">What will <code style="font-family:var(--mono);background:var(--border);padding:2px 6px;border-radius:4px">print('I', 'Love', 'Python', sep='*')</code> output?</div>
+    <div class="options">
+      <button class="option-btn" onclick="pickMCQ(5,'A')"><span class="opt-letter">A</span>I Love Python</button>
+      <button class="option-btn" onclick="pickMCQ(5,'B')"><span class="opt-letter">B</span>ILovePython</button>
+      <button class="option-btn" onclick="pickMCQ(5,'C')"><span class="opt-letter">C</span>I*Love*Python</button>
+      <button class="option-btn" onclick="pickMCQ(5,'D')"><span class="opt-letter">D</span>I Love*Python</button>
+    </div>
+    <div class="feedback" id="q5-fb"></div>
+  </div>
+
+  <div class="q-card" id="q6-card">
+    <div class="q-num">Question 6 of 11 · MCQ</div>
+    <div class="q-text">Which escape character moves the output to the <strong>next line</strong>?</div>
+    <div class="options">
+      <button class="option-btn" onclick="pickMCQ(6,'A')"><span class="opt-letter">A</span>\t</button>
+      <button class="option-btn" onclick="pickMCQ(6,'B')"><span class="opt-letter">B</span>\n</button>
+      <button class="option-btn" onclick="pickMCQ(6,'C')"><span class="opt-letter">C</span>\'</button>
+      <button class="option-btn" onclick="pickMCQ(6,'D')"><span class="opt-letter">D</span>\\</button>
+    </div>
+    <div class="feedback" id="q6-fb"></div>
+  </div>
+
+  <div class="q-card" id="q7-card">
+    <div class="q-num">Question 7 of 11 · MCQ</div>
+    <div class="q-text">Given <code style="font-family:var(--mono);background:var(--border);padding:2px 6px;border-radius:4px">s = "Hello, AOU students!"</code>, what does <code style="font-family:var(--mono);background:var(--border);padding:2px 6px;border-radius:4px">s[1:5]</code> return?</div>
+    <div class="options">
+      <button class="option-btn" onclick="pickMCQ(7,'A')"><span class="opt-letter">A</span>Hello</button>
+      <button class="option-btn" onclick="pickMCQ(7,'B')"><span class="opt-letter">B</span>ello</button>
+      <button class="option-btn" onclick="pickMCQ(7,'C')"><span class="opt-letter">C</span>ello,</button>
+      <button class="option-btn" onclick="pickMCQ(7,'D')"><span class="opt-letter">D</span>Hell</button>
+    </div>
+    <div class="feedback" id="q7-fb"></div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="q-card" id="q9-card">
+    <div class="q-num">Question 9 of 14 · MCQ</div>
+    <div class="q-text">In Python's program development cycle, which phase comes <strong>immediately after</strong> "Write the Code"?</div>
+    <div class="options">
+      <button class="option-btn" onclick="pickMCQ(9,'A')"><span class="opt-letter">A</span>Design the Program</button>
+      <button class="option-btn" onclick="pickMCQ(9,'B')"><span class="opt-letter">B</span>Test the Program</button>
+      <button class="option-btn" onclick="pickMCQ(9,'C')"><span class="opt-letter">C</span>Correct Syntax Errors</button>
+      <button class="option-btn" onclick="pickMCQ(9,'D')"><span class="opt-letter">D</span>Correct Logic Errors</button>
+    </div>
+    <div class="feedback" id="q9-fb"></div>
+  </div>
+
+  <!-- Q10 removed -->
+
+  <!-- ========== SECTION 2: TRUE / FALSE ========== -->
+  <div class="section-label">
+    <span class="badge badge-tf">Part B</span>
+    <span style="font-size:15px;font-weight:600">True or False</span>
+    <hr>
+    <span style="font-size:13px;color:var(--muted);white-space:nowrap">4 pts</span>
+  </div>
+
+  <!-- Q11 -->
+  <div class="q-card" id="q11-card">
+    <div class="q-num">Question 11 of 14 · True / False</div>
+    <div class="q-text">An algorithm can only be implemented in one specific programming language.</div>
+    <div class="tf-row">
+      <button class="tf-btn" onclick="pickTF(11,'T')">✓ True</button>
+      <button class="tf-btn" onclick="pickTF(11,'F')">✗ False</button>
+    </div>
+    <div class="feedback" id="q11-fb"></div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="q-card" id="q12-card">
+    <div class="q-num">Question 12 of 14 · True / False</div>
+    <div class="q-text">In Python, <code style="font-family:var(--mono);background:var(--border);padding:2px 6px;border-radius:4px">print("hello")</code> and <code style="font-family:var(--mono);background:var(--border);padding:2px 6px;border-radius:4px">Print("hello")</code> produce the same result.</div>
+    <div class="tf-row">
+      <button class="tf-btn" onclick="pickTF(12,'T')">✓ True</button>
+      <button class="tf-btn" onclick="pickTF(12,'F')">✗ False</button>
+    </div>
+    <div class="feedback" id="q12-fb"></div>
+  </div>
+
+  <!-- Q13 removed -->
+
+  <!-- Q11 – MATCHING (counts as one question item) -->
+  <div class="section-label">
+    <span class="badge badge-match">Part C</span>
+    <span style="font-size:15px;font-weight:600">Matching</span>
+    <hr>
+    <span style="font-size:13px;color:var(--muted);white-space:nowrap">4 pts</span>
+  </div>
+
+  <div class="q-card" id="q14-card">
+    <div class="q-num">Question 14 of 14 · Matching</div>
+    <div class="q-text">Match each term on the left with its correct description on the right. Click a term, then click its matching definition.</div>
+    <div style="margin-top:16px">
+      <div class="match-grid">
+        <div>
+          <div class="match-col-label">Terms</div>
+          <div class="match-term" id="mt-0" onclick="clickTerm(0)">Flowchart</div>
+          <div class="match-term" id="mt-1" onclick="clickTerm(1)">Pseudocode</div>
+          <div class="match-term" id="mt-2" onclick="clickTerm(2)">Sequence Structure</div>
+          <div class="match-term" id="mt-3" onclick="clickTerm(3)">Decision Structure</div>
+        </div>
+        <div>
+          <div class="match-col-label">Definitions</div>
+          <div class="match-def" id="md-B" onclick="clickDef('B')">Uses English-like phrases to outline a program without any specific language syntax</div>
+          <div class="match-def" id="md-D" onclick="clickDef('D')">Selects between two alternatives based on a condition (IF / ELSE)</div>
+          <div class="match-def" id="md-A" onclick="clickDef('A')">A diagram using shapes connected by arrows to show the steps of an algorithm</div>
+          <div class="match-def" id="md-C" onclick="clickDef('C')">Algorithm steps executed one after another with no conditions required</div>
+        </div>
+      </div>
+      <div class="match-result" id="match-result"></div>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 3: OPEN QUESTIONS ========== -->
+  <div class="section-label">
+    <span class="badge badge-open">Part D</span>
+    <span style="font-size:15px;font-weight:600">Written Questions</span>
+    <hr>
+    <span style="font-size:13px;color:var(--muted);white-space:nowrap">Graded manually</span>
+  </div>
+
+  <!-- Open Q1 -->
+  <div class="q-card">
+    <div class="q-num">Open Question 1 · Pseudocode</div>
+    <div class="q-text">Write a <strong>pseudocode</strong> for a repetition (loop) structure that reads 5 numbers from the user and prints their sum. Use proper pseudocode conventions (Start, variables, WHILE/FOR loop, Input, Output, Stop).</div>
+    <textarea class="open-area" id="open1" placeholder="Start&#10;  Use variables i, number, sum&#10;  sum = 0&#10;  i = 1&#10;  ...&#10;Stop"></textarea>
+    <div class="open-hint"><strong>Hint:</strong> Think about initializing a counter, using a loop condition (e.g. WHILE i ≤ 5), accumulating the sum inside the loop, and printing the result after the loop ends.</div>
+  </div>
+
+  <!-- Open Q2 HARDER -->
+  <div class="q-card">
+    <div class="q-num">Open Question 2 · Python Code</div>
+    <div class="q-text">
+      Write a complete <strong>Python program</strong> that performs the following steps:
+      <ol style="margin-top:12px;margin-left:20px;line-height:2.2;color:var(--muted);font-size:14px">
+        <li>Ask the user to enter <strong>three integer numbers</strong>: <code style="font-family:var(--mono);background:var(--border);padding:1px 5px;border-radius:4px">a</code>, <code style="font-family:var(--mono);background:var(--border);padding:1px 5px;border-radius:4px">b</code>, and <code style="font-family:var(--mono);background:var(--border);padding:1px 5px;border-radius:4px">c</code>.</li>
+        <li>Compute and print the <strong>average</strong> of the three numbers as a <strong>float</strong>.</li>
+        <li>Determine and print whether the integer part of the average is <strong>even or odd</strong>.</li>
+        <li>Print the average <strong>rounded to 2 decimal places</strong> using <code style="font-family:var(--mono);background:var(--border);padding:1px 5px;border-radius:4px">round()</code>.</li>
+      </ol>
+      <span style="color:var(--accent2);font-size:13px;margin-top:8px;display:block">&#9888; Your program must produce clearly labelled output for each step.</span>
+    </div>
+    <textarea class="open-area" id="open2" style="min-height:220px" placeholder="# Write your Python code here&#10;a = int(input('Enter first number: '))&#10;b = ...&#10;c = ...&#10;&#10;# Step 2: average&#10;average = ...&#10;print('Average:', ...)&#10;&#10;# Step 3: even or odd&#10;if int(average) % 2 == 0:&#10;    print(...)&#10;else:&#10;    print(...)&#10;&#10;# Step 4: rounded&#10;print('Rounded:', round(..., 2))"></textarea>
+    <div class="open-hint">
+      <strong>Hints:</strong>
+      <ul style="margin-top:6px;margin-left:16px;line-height:1.9;font-size:13px">
+        <li>Use <code style="font-family:var(--mono)">int(input(...))</code> to read integers from the user.</li>
+        <li>Use <code style="font-family:var(--mono)">/</code> (not <code style="font-family:var(--mono)">//</code>) so the average is a float.</li>
+        <li>Use <code style="font-family:var(--mono)">int(average) % 2</code> to check even or odd.</li>
+        <li>Use <code style="font-family:var(--mono)">round(value, 2)</code> for 2-decimal rounding.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-wrap">
+    <button class="submit-btn" onclick="submitQuiz()">Submit Quiz →</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results">
+    <div class="result-hero">
+      <div class="result-score" id="res-score">0%</div>
+      <div class="result-label">Auto-graded score (open questions graded separately)</div>
+      <div class="result-grade" id="res-grade"></div>
+      <div class="result-breakdown">
+        <div class="breakdown-item">
+          <div class="breakdown-num" id="res-mcq">0/10</div>
+          <div class="breakdown-lbl">MCQ Correct</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-num" id="res-tf">0/3</div>
+          <div class="breakdown-lbl">True/False Correct</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-num" id="res-match">0/4</div>
+          <div class="breakdown-lbl">Matching Points</div>
+        </div>
+      </div>
+    </div>
+    <button class="retry-btn" onclick="retryQuiz()">↩ Try Again</button>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ===== STATE =====
+const MCQ_ANSWERS = { 1:'B', 2:'B', 3:'C', 4:'B', 5:'C', 6:'C', 7:'B', 8:'B', 9:'C', 10:'C' };
+const TF_ANSWERS  = { 11:'F', 12:'F', 13:'T' };
+// Matching: term index → correct def key
+const MATCH_CORRECT = { 0:'A', 1:'B', 2:'C', 3:'D' };
+const MATCH_LABELS  = { 0:'Flowchart', 1:'Pseudocode', 2:'Sequence Structure', 3:'Decision Structure' };
+
+let mcqSelected = {};
+let tfSelected  = {};
+let matchState  = { activeTerm: null, matched: {} }; // matched: termIndex → defKey
+let submitted   = false;
+
+// progress
+const TOTAL_Q = 14; // 10 MCQ + 3 TF + 1 matching block
+function updateProgress() {
+  let count = Object.keys(mcqSelected).length + Object.keys(tfSelected).length;
+  if (Object.keys(matchState.matched).length > 0) count++;
+  const pct = Math.round(count / TOTAL_Q * 100);
+  document.getElementById('prog-text').textContent = `${count} / ${TOTAL_Q} answered`;
+  document.getElementById('prog-bar').style.width = pct + '%';
+}
+
+// ===== MCQ =====
+function pickMCQ(qNum, letter) {
+  if (submitted) return;
+  mcqSelected[qNum] = letter;
+  const card = document.getElementById(`q${qNum}-card`);
+  card.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+  const btns = card.querySelectorAll('.option-btn');
+  const letters = ['A','B','C','D'];
+  btns[letters.indexOf(letter)].classList.add('selected');
+  updateProgress();
+}
+
+// ===== TRUE / FALSE =====
+function pickTF(qNum, val) {
+  if (submitted) return;
+  tfSelected[qNum] = val;
+  const card = document.getElementById(`q${qNum}-card`);
+  card.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected'));
+  const btns = card.querySelectorAll('.tf-btn');
+  btns[val === 'T' ? 0 : 1].classList.add('selected');
+  updateProgress();
+}
+
+// ===== MATCHING =====
+function clickTerm(idx) {
+  if (submitted) return;
+  if (matchState.matched[idx] !== undefined) return; // already matched
+  // deactivate any previous active term
+  document.querySelectorAll('.match-term').forEach(el => el.classList.remove('active'));
+  if (matchState.activeTerm === idx) {
+    matchState.activeTerm = null;
+    return;
+  }
+  matchState.activeTerm = idx;
+  document.getElementById('mt-' + idx).classList.add('active');
+}
+
+function clickDef(defKey) {
+  if (submitted) return;
+  if (matchState.activeTerm === null) return;
+  const idx = matchState.activeTerm;
+  // check if def already used
+  const usedDefs = Object.values(matchState.matched);
+  if (usedDefs.includes(defKey)) return;
+
+  matchState.matched[idx] = defKey;
+  matchState.activeTerm = null;
+
+  // visual feedback
+  document.getElementById('mt-' + idx).classList.remove('active');
+  document.getElementById('mt-' + idx).classList.add('matched');
+  document.getElementById('md-' + defKey).classList.add('matched');
+  document.querySelectorAll('.match-term').forEach(el => el.classList.remove('active'));
+
+  // if all matched, show result
+  if (Object.keys(matchState.matched).length === 4) {
+    updateProgress();
+  } else {
+    updateProgress();
+  }
+}
+
+// ===== SUBMIT =====
+function submitQuiz() {
+  if (submitted) return;
+  submitted = true;
+
+  // --- Grade MCQ ---
+  let mcqCorrect = 0;
+  const letters = ['A','B','C','D'];
+  for (let q = 1; q <= 10; q++) {
+    const card = document.getElementById(`q${q}-card`);
+    const btns = card.querySelectorAll('.option-btn');
+    const correct = MCQ_ANSWERS[q];
+    const chosen  = mcqSelected[q];
+    btns.forEach((btn, i) => {
+      btn.disabled = true;
+      if (letters[i] === correct) btn.classList.add('correct');
+      else if (letters[i] === chosen && chosen !== correct) btn.classList.add('wrong');
+    });
+    const fb = document.getElementById(`q${q}-fb`);
+    if (!chosen) {
+      fb.textContent = `Not answered. Correct answer: ${correct}`;
+      fb.className = 'feedback show wrong';
+    } else if (chosen === correct) {
+      fb.textContent = '✓ Correct!';
+      fb.className = 'feedback show correct';
+      mcqCorrect++;
+    } else {
+      fb.textContent = `✗ Incorrect. Correct answer: ${correct}`;
+      fb.className = 'feedback show wrong';
+    }
+  }
+
+  // --- Grade TF ---
+  let tfCorrect = 0;
+  for (let q = 11; q <= 13; q++) {
+    const card = document.getElementById(`q${q}-card`);
+    const btns = card.querySelectorAll('.tf-btn');
+    const correct = TF_ANSWERS[q];
+    const chosen  = tfSelected[q];
+    btns.forEach((btn, i) => {
+      btn.disabled = true;
+      const v = i === 0 ? 'T' : 'F';
+      if (v === correct) btn.classList.add('correct');
+      else if (v === chosen && chosen !== correct) btn.classList.add('wrong');
+    });
+    const fb = document.getElementById(`q${q}-fb`);
+    if (!chosen) {
+      fb.textContent = `Not answered. Correct answer: ${correct === 'T' ? 'True' : 'False'}`;
+      fb.className = 'feedback show wrong';
+    } else if (chosen === correct) {
+      fb.textContent = '✓ Correct!';
+      fb.className = 'feedback show correct';
+      tfCorrect++;
+    } else {
+      fb.textContent = `✗ Incorrect. Correct answer: ${correct === 'T' ? 'True' : 'False'}`;
+      fb.className = 'feedback show wrong';
+    }
+  }
+
+  // --- Grade Matching ---
+  let matchPts = 0;
+  let wrongMatches = [];
+  for (let i = 0; i < 4; i++) {
+    const chosen = matchState.matched[i];
+    const correct = MATCH_CORRECT[i];
+    if (chosen === correct) {
+      matchPts++;
+    } else {
+      const termEl = document.getElementById('mt-' + i);
+      termEl.classList.remove('matched');
+      termEl.classList.add('wrong-match');
+      if (chosen) {
+        const defEl = document.getElementById('md-' + chosen);
+        defEl.classList.remove('matched');
+        defEl.classList.add('wrong-match');
+      }
+      wrongMatches.push(MATCH_LABELS[i] + ' → ' + ['A diagram…','English-like phrases…','Steps one after another…','IF/ELSE condition…'][['A','B','C','D'].indexOf(correct)]);
+    }
+  }
+  // Highlight correct matches that were wrong
+  for (let i = 0; i < 4; i++) {
+    if (matchState.matched[i] !== MATCH_CORRECT[i]) {
+      document.getElementById('md-' + MATCH_CORRECT[i]).classList.add('matched');
+    }
+  }
+  const matchResEl = document.getElementById('match-result');
+  if (matchPts === 4) {
+    matchResEl.textContent = '✓ All matches correct!';
+    matchResEl.className = 'match-result show correct-all';
+  } else {
+    matchResEl.innerHTML = `✗ ${matchPts}/4 correct. Review the highlighted correct matches above.`;
+    matchResEl.className = 'match-result show wrong-some';
+  }
+
+  // disable open areas
+  document.getElementById('open1').disabled = true;
+  document.getElementById('open2').disabled = true;
+
+  // --- Results summary ---
+  const autoTotal = mcqCorrect + tfCorrect + matchPts;
+  const autoMax   = 17; // 10 + 3 + 4
+  const pct = Math.round(autoTotal / autoMax * 100);
+  document.getElementById('res-score').textContent = pct + '%';
+  document.getElementById('res-mcq').textContent   = mcqCorrect + '/10';
+  document.getElementById('res-tf').textContent    = tfCorrect + '/3';
+  document.getElementById('res-match').textContent = matchPts + '/4';
+
+  let grade = '';
+  if (pct >= 90) grade = '🏆 Excellent!';
+  else if (pct >= 75) grade = '👍 Good job!';
+  else if (pct >= 60) grade = '📘 Keep studying!';
+  else grade = '💪 Review the material and try again.';
+  document.getElementById('res-grade').textContent = grade;
+
+  document.getElementById('results').style.display = 'block';
+  document.querySelector('.submit-wrap').style.display = 'none';
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  clearInterval(timerInterval);
+}
+
+function retryQuiz() { location.reload(); }
+
+// ===== TIMER =====
+let seconds = 30 * 60;
+const timerEl = document.getElementById('timer');
+const timerInterval = setInterval(() => {
+  seconds--;
+  if (seconds <= 0) {
+    clearInterval(timerInterval);
+    timerEl.textContent = '00:00';
+    timerEl.style.color = 'var(--red)';
+    if (!submitted) submitQuiz();
+    return;
+  }
+  const m = Math.floor(seconds / 60).toString().padStart(2,'0');
+  const s = (seconds % 60).toString().padStart(2,'0');
+  timerEl.textContent = `${m}:${s}`;
+  if (seconds <= 300) timerEl.style.color = 'var(--red)';
+  else if (seconds <= 600) timerEl.style.color = 'var(--yellow)';
+}, 1000);
+</script>
+</body>
+</html>
